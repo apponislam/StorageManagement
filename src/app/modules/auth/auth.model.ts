@@ -2,17 +2,11 @@ import { Model, Schema, model } from "mongoose";
 import bcrypt from "bcrypt";
 import config from "../../config";
 
-interface IUser {
-    username: string;
-    email: string;
-    password: string;
-    photo?: string;
-    isDeleted: boolean;
-}
-
 interface UserModel extends Model<IUser> {
     isPasswordMatched(plainTextPassword: string, hashedPassword: string): Promise<boolean>;
 }
+
+const FIFTEEN_GB_IN_BYTES = 15 * 1024 * 1024 * 1024;
 
 const userSchema = new Schema<IUser, UserModel>(
     {
@@ -49,6 +43,10 @@ const userSchema = new Schema<IUser, UserModel>(
                 message: "Invalid photo URL",
             },
         },
+        storageLimit: {
+            type: Number,
+            default: FIFTEEN_GB_IN_BYTES,
+        },
         isDeleted: {
             type: Boolean,
             default: false,
@@ -70,18 +68,31 @@ userSchema.pre(["find", "findOne"], function (next) {
 userSchema.pre("save", async function (next) {
     if (!this.isModified("password")) return next();
     this.password = await bcrypt.hash(this.password, Number(config.bcrypt_salt_rounds));
+    this.storageLimit = FIFTEEN_GB_IN_BYTES;
     next();
 });
 
 userSchema.methods.toJSON = function () {
     const user = this.toObject();
     delete user.password;
+    if (user.storageLimit != null) {
+        user.storageLimit = user.storageLimit / (1024 * 1024 * 1024);
+    }
     return user;
 };
 
 userSchema.statics.isPasswordMatched = async function (plainTextPassword: string, hashedPassword: string) {
     return await bcrypt.compare(plainTextPassword, hashedPassword);
 };
+
+userSchema.set("toJSON", {
+    transform: function (doc, ret) {
+        if (ret.storageLimit != null) {
+            ret.storageLimit = ret.storageLimit / (1024 * 1024 * 1024);
+        }
+        return ret;
+    },
+});
 
 export const User = model<IUser, UserModel>("User", userSchema);
 export default User;

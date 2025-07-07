@@ -4,4 +4,5 @@ interface IUser {
     password: string;
     photo?: string;
     isDeleted: boolean;
+    storageLimit: number;
 }
