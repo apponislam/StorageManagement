@@ -7,6 +7,7 @@ export interface IJwtPayload {
     photo?: string;
     isDeleted: boolean;
     storageLimit: number;
+    authType: "email" | "google" | "both";
 }
 
 export const createToken = (jwtPayload: IJwtPayload, secret: string, expiresIn: string) => {

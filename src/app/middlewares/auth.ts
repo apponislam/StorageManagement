@@ -10,10 +10,10 @@ import { IJwtPayload } from "../modules/auth/auth.utils";
 
 const auth = () => {
     return catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-        console.log(req.headers.authorization);
+        // console.log(req.headers.authorization);
         const token = req.headers.authorization?.replace(/^Bearer\s+/i, "");
 
-        console.log(token);
+        // console.log(token);
 
         if (!token) {
             sendResponse(res, {

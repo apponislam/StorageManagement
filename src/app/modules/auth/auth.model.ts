@@ -26,10 +26,23 @@ const userSchema = new Schema<IUser, UserModel>(
         },
         password: {
             type: String,
-            required: [true, "Password is required"],
+            required: function () {
+                return this.authType === "email";
+            },
             minlength: [6, "Password must be at least 6 characters"],
             maxlength: [100, "Password cannot exceed 100 characters"],
             select: false,
+        },
+        authType: {
+            type: String,
+            enum: ["email", "google"],
+            default: "email",
+            required: true,
+        },
+        googleId: {
+            type: String,
+            unique: true,
+            sparse: true,
         },
 
         photo: {
@@ -51,6 +64,13 @@ const userSchema = new Schema<IUser, UserModel>(
             type: Boolean,
             default: false,
         },
+        resetPass: {
+            type: {
+                passwordResetOTP: { type: String },
+                passwordResetExpire: { type: Date },
+            },
+            required: false,
+        },
     },
     {
         timestamps: true,
@@ -66,9 +86,9 @@ userSchema.pre(["find", "findOne"], function (next) {
 });
 
 userSchema.pre("save", async function (next) {
-    if (!this.isModified("password")) return next();
-    this.password = await bcrypt.hash(this.password, Number(config.bcrypt_salt_rounds));
-    this.storageLimit = FIFTEEN_GB_IN_BYTES;
+    if (this.authType === "email" && this.isModified("password")) {
+        this.password = await bcrypt.hash(this.password!, Number(config.bcrypt_salt_rounds));
+    }
     next();
 });
 

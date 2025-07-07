@@ -2,8 +2,9 @@ import { JwtPayload } from "jsonwebtoken";
 
 declare global {
     namespace Express {
+        interface User extends IUser {}
         interface Request {
-            user: JwtPayload;
+            user?: IUser;
         }
     }
 }
