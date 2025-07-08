@@ -29,4 +29,6 @@ export default {
     // Redis
     redis_host: process.env.REDIS_HOST,
     redis_port: process.env.REDIS_PORT,
+    // Uploadcare
+    uploadcare_public_key: process.env.UPLOADCARE_PUBLIC_KEY,
 };

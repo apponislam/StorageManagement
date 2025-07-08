@@ -12,6 +12,7 @@
         "build": "tsc"
     },
     "dependencies": {
+        "@uploadcare/upload-client": "^6.16.2",
         "bcrypt": "^6.0.0",
         "cloudinary": "^2.7.0",
         "cors": "^2.8.5",
