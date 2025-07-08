@@ -20,7 +20,7 @@ const handleSecretFolder = async (payload: { pin: string; confirmPin?: string; o
         isDeleted: false,
     })
         .select("+pin")
-        // .populate("files")
+        .populate("files")
         .populate("subfolders")
         .lean();
 
@@ -70,7 +70,7 @@ const getFolder = async (folderId: string, userId: Types.ObjectId) => {
         owner: userId,
         isDeleted: false,
     })
-        // .populate("files")
+        .populate("files")
         .populate("subfolders")
         .lean();
     if (!folder) throw new Error("Folder not found");
@@ -94,7 +94,7 @@ const updateFolder = async (params: {
     }
 
     const folder = await Folder.findOneAndUpdate({ _id: new Types.ObjectId(folderId), owner: userId }, updatePayload, { new: true })
-        // .populate("files")
+        .populate("files")
         .populate("subfolders")
         .lean();
 

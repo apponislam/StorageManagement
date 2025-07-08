@@ -92,14 +92,33 @@ userSchema.pre("save", async function (next) {
     next();
 });
 
+const formatBytes = (bytes: number): string => {
+    if (bytes === 0) return "0 B";
+
+    const k = 1024;
+    const sizes = ["B", "KB", "MB", "GB", "TB"];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    const value = bytes / Math.pow(k, i);
+    return `${value.toFixed(2)} ${sizes[i]}`;
+};
+
 userSchema.methods.toJSON = function () {
     const user = this.toObject();
     delete user.password;
     if (user.storageLimit != null) {
-        user.storageLimit = user.storageLimit / (1024 * 1024 * 1024);
+        user.storageLimit = formatBytes(user.storageLimit);
     }
     return user;
 };
+
+// userSchema.methods.toJSON = function () {
+//     const user = this.toObject();
+//     delete user.password;
+//     if (user.storageLimit != null) {
+//         user.storageLimit = user.storageLimit / (1024 * 1024 * 1024);
+//     }
+//     return user;
+// };
 
 userSchema.statics.isPasswordMatched = async function (plainTextPassword: string, hashedPassword: string) {
     return await bcrypt.compare(plainTextPassword, hashedPassword);

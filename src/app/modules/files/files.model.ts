@@ -1,6 +1,6 @@
-// src/modules/files/files.model.ts
 import { Schema, model } from "mongoose";
 import { IFile } from "./files.interface";
+import { formatBytes } from "../../utils/formatBytes";
 
 const fileSchema = new Schema<IFile>(
     {
@@ -51,5 +51,21 @@ fileSchema.pre(["find", "findOne"], function (next) {
     this.where({ isDeleted: false });
     next();
 });
+
+fileSchema.methods.toJSON = function () {
+    const file = this.toObject();
+    if (file.size != null) {
+        file.size = formatBytes(file.size);
+    }
+    return file;
+};
+
+// fileSchema.methods.toJSON = function () {
+//     const file = this.toObject();
+//     if (file.size != null) {
+//         file.size = file.size / (1024 * 1024 * 1024);
+//     }
+//     return file;
+// };
 
 export const File = model<IFile>("File", fileSchema);

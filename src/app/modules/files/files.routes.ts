@@ -8,4 +8,10 @@ const router = Router();
 
 router.post("/upload", auth(), upload.single("file"), uploadcareMiddleware, FileController.createFile);
 
+router.get("/myfiles", auth(), FileController.getAllFiles);
+
+router.get("/myfiles/summary", auth(), FileController.getStorageSummary);
+
+router.get("/myfiles/summarybytype", auth(), FileController.getCategorySummary);
+
 export const fileRoute = router;
