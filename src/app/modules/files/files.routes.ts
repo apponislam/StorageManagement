@@ -28,4 +28,6 @@ router.post("/myfiles/:fileId/duplicate", auth(), FileController.duplicateFile);
 
 router.post("/myfiles/:fileId/copy-to/:folderId", auth(), FileController.copyToFolder);
 
+router.post("/myfiles/:fileId/move-to/:folderId", auth(), FileController.moveToFolder);
+
 export const fileRoute = router;

@@ -212,6 +212,30 @@ const copyFileToFolder = (fileId, ownerId, destFolderId) => __awaiter(void 0, vo
     yield folders_model_1.Folder.updateOne({ _id: destFolderId }, { $addToSet: { files: copy._id } });
     return copy.toObject();
 });
+const moveFileToFolder = (fileId, ownerId, destFolderId) => __awaiter(void 0, void 0, void 0, function* () {
+    const destFolder = yield folders_model_1.Folder.findOne({
+        _id: destFolderId,
+        owner: ownerId,
+        isDeleted: false,
+    }).lean();
+    if (!destFolder)
+        return null;
+    const file = yield files_model_1.File.findOne({
+        _id: fileId,
+        owner: ownerId,
+        isDeleted: false,
+    });
+    if (!file)
+        return null;
+    file.parentFolder = destFolderId;
+    file.secretFolder = destFolder.folderType === "secret";
+    yield file.save();
+    if (file.parentFolder) {
+        yield folders_model_1.Folder.updateOne({ _id: file.parentFolder, owner: ownerId }, { $pull: { files: file._id } });
+    }
+    yield folders_model_1.Folder.updateOne({ _id: destFolderId, owner: ownerId }, { $addToSet: { files: file._id } });
+    return file.toObject();
+});
 exports.FileServices = {
     createFile,
     getAllFiles,
@@ -223,4 +247,5 @@ exports.FileServices = {
     getFilesByDateRange,
     duplicateFile,
     copyFileToFolder,
+    moveFileToFolder,
 };

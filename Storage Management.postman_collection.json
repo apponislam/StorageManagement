@@ -25,7 +25,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"username\": \"john_doe 55\",\r\n  \"email\": \"john.doe55@example.com\",\r\n  \"password\": \"password\",\r\n  \"confirmPassword\": \"password\"\r\n}\r\n",
+							"raw": "{\r\n  \"username\": \"john_doe 555\",\r\n  \"email\": \"john.doe555@example.com\",\r\n  \"password\": \"password\",\r\n  \"confirmPassword\": \"password\"\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -855,6 +855,39 @@
 								"myfiles",
 								"686d89dd534287ae4bdbd0b0",
 								"copy-to",
+								"686d3cb8d114f3801491a780"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Move to folder",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2ODZkMzQyNjdjMWE3NGY4OWNhZDMwMGIiLCJ1c2VybmFtZSI6ImpvaG5fZG9lIiwiZW1haWwiOiJqb2huLmRvZTFAZXhhbXBsZS5jb20iLCJwaG90byI6IiIsImlzRGVsZXRlZCI6ZmFsc2UsInN0b3JhZ2VMaW1pdCI6MTYxMDYxMjczNjAsImF1dGhUeXBlIjoiZW1haWwiLCJpYXQiOjE3NTIwMTEyOTksImV4cCI6MTc1MjA5NzY5OX0.DTkajvs55iYhCKaPuD6xzhvIY8A78AMGgkr6r7jy8No",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{local-link}}/api/v1/files/myfiles/686d89dd534287ae4bdbd0b0/move-to/686d3cb8d114f3801491a780",
+							"host": [
+								"{{local-link}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"files",
+								"myfiles",
+								"686d89dd534287ae4bdbd0b0",
+								"move-to",
 								"686d3cb8d114f3801491a780"
 							]
 						}

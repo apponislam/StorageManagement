@@ -312,6 +312,37 @@ const copyToFolder = catchAsync(async (req, res) => {
     });
 });
 
+const moveToFolder = catchAsync(async (req, res) => {
+    if (!req.user?._id) {
+        return sendResponse(res, {
+            statusCode: httpStatus.UNAUTHORIZED,
+            success: false,
+            message: "Unauthorized",
+            data: null,
+        });
+    }
+
+    const { fileId, folderId } = req.params;
+
+    const movedFile = await FileServices.moveFileToFolder(fileId, new Types.ObjectId(req.user._id), new Types.ObjectId(folderId));
+
+    if (!movedFile) {
+        return sendResponse(res, {
+            statusCode: httpStatus.NOT_FOUND,
+            success: false,
+            message: "File or destination folder not found / no permission",
+            data: null,
+        });
+    }
+
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "File moved to folder successfully",
+        data: movedFile,
+    });
+});
+
 export const FileController = {
     createFile,
     getAllFiles,
@@ -323,4 +354,5 @@ export const FileController = {
     getFilesByDate,
     duplicateFile,
     copyToFolder,
+    moveToFolder,
 };

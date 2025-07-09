@@ -240,6 +240,37 @@ const copyFileToFolder = async (fileId: string, ownerId: Types.ObjectId, destFol
     return copy.toObject();
 };
 
+const moveFileToFolder = async (fileId: string, ownerId: Types.ObjectId, destFolderId: Types.ObjectId): Promise<IFile | null> => {
+    const destFolder = await Folder.findOne({
+        _id: destFolderId,
+        owner: ownerId,
+        isDeleted: false,
+    }).lean();
+
+    if (!destFolder) return null;
+
+    const file = await File.findOne({
+        _id: fileId,
+        owner: ownerId,
+        isDeleted: false,
+    });
+
+    if (!file) return null;
+
+    file.parentFolder = destFolderId;
+    file.secretFolder = destFolder.folderType === "secret";
+
+    await file.save();
+
+    if (file.parentFolder) {
+        await Folder.updateOne({ _id: file.parentFolder, owner: ownerId }, { $pull: { files: file._id } });
+    }
+
+    await Folder.updateOne({ _id: destFolderId, owner: ownerId }, { $addToSet: { files: file._id } });
+
+    return file.toObject();
+};
+
 export const FileServices = {
     createFile,
     getAllFiles,
@@ -251,4 +282,5 @@ export const FileServices = {
     getFilesByDateRange,
     duplicateFile,
     copyFileToFolder,
+    moveFileToFolder,
 };

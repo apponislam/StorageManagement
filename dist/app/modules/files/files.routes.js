@@ -22,4 +22,5 @@ router.patch("/myfiles/:fileId/rename", (0, auth_1.default)(), (0, validateReque
 router.get("/myfiles/by-date", (0, auth_1.default)(), files_controller_1.FileController.getFilesByDate);
 router.post("/myfiles/:fileId/duplicate", (0, auth_1.default)(), files_controller_1.FileController.duplicateFile);
 router.post("/myfiles/:fileId/copy-to/:folderId", (0, auth_1.default)(), files_controller_1.FileController.copyToFolder);
+router.post("/myfiles/:fileId/move-to/:folderId", (0, auth_1.default)(), files_controller_1.FileController.moveToFolder);
 exports.fileRoute = router;
