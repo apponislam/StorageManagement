@@ -122,9 +122,143 @@ const getCategorySummary = catchAsync(async (req, res) => {
     });
 });
 
+const toggleFavoriteStatus = catchAsync(async (req, res) => {
+    const { fileId } = req.params;
+
+    if (!req.user?._id) {
+        return sendResponse(res, {
+            statusCode: httpStatus.UNAUTHORIZED,
+            success: false,
+            message: "Unauthorized: User not authenticated",
+            data: null,
+        });
+    }
+
+    const updatedFile = await FileServices.toggleFavorite(fileId, new Types.ObjectId(req.user._id));
+
+    if (!updatedFile) {
+        return sendResponse(res, {
+            statusCode: httpStatus.NOT_FOUND,
+            success: false,
+            message: "File not found or you do not have permission",
+            data: null,
+        });
+    }
+
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "Favorite status toggled successfully",
+        data: updatedFile,
+    });
+});
+
+const getFavorites = catchAsync(async (req, res) => {
+    if (!req.user?._id) {
+        return sendResponse(res, {
+            statusCode: httpStatus.UNAUTHORIZED,
+            success: false,
+            message: "Unauthorized: User not authenticated",
+            data: null,
+        });
+    }
+
+    const files = await FileServices.getFavoriteFiles(new Types.ObjectId(req.user._id));
+
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "Favorite files retrieved successfully",
+        data: files,
+    });
+});
+
+const renameFileController = catchAsync(async (req, res) => {
+    const { fileId } = req.params;
+    const { name } = req.body;
+
+    if (!req.user?._id) {
+        return sendResponse(res, {
+            statusCode: httpStatus.UNAUTHORIZED,
+            success: false,
+            message: "Unauthorized: User not authenticated",
+            data: null,
+        });
+    }
+
+    if (!name || name.trim() === "") {
+        return sendResponse(res, {
+            statusCode: httpStatus.BAD_REQUEST,
+            success: false,
+            message: "New name is required",
+            data: null,
+        });
+    }
+
+    const updatedFile = await FileServices.renameFile(fileId, new Types.ObjectId(req.user._id), name.trim());
+
+    if (!updatedFile) {
+        return sendResponse(res, {
+            statusCode: httpStatus.NOT_FOUND,
+            success: false,
+            message: "File not found or you do not have permission",
+            data: null,
+        });
+    }
+
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "File renamed successfully",
+        data: updatedFile,
+    });
+});
+
+const getFilesByDate = catchAsync(async (req, res) => {
+    if (!req.user?._id) {
+        return sendResponse(res, {
+            statusCode: httpStatus.UNAUTHORIZED,
+            success: false,
+            message: "Unauthorized: User not authenticated",
+            data: null,
+        });
+    }
+
+    const { start, end } = req.query;
+
+    const startDate = start ? new Date(start as string) : undefined;
+    const endDate = end ? new Date(end as string) : undefined;
+
+    if ((start && isNaN(startDate!.valueOf())) || (end && isNaN(endDate!.valueOf()))) {
+        return sendResponse(res, {
+            statusCode: httpStatus.BAD_REQUEST,
+            success: false,
+            message: "Invalid date format. Use ISO (YYYY‑MM‑DD).",
+            data: null,
+        });
+    }
+
+    const files = await FileServices.getFilesByDateRange({
+        owner: new Types.ObjectId(req.user._id),
+        start: startDate,
+        end: endDate,
+    });
+
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "Files retrieved successfully",
+        data: files,
+    });
+});
+
 export const FileController = {
     createFile,
     getAllFiles,
     getStorageSummary,
     getCategorySummary,
+    toggleFavoriteStatus,
+    getFavorites,
+    renameFileController,
+    getFilesByDate,
 };

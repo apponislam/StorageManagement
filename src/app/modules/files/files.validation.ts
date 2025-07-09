@@ -27,7 +27,6 @@ export const getFileSchema = z.object({
 });
 
 export const updateFileSchema = z.object({
-    params: z.object({ id: mongoId }),
     body: z.object({
         name: z.string().min(1).max(255).optional(),
         path: z.string().min(1).optional(),

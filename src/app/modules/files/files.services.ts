@@ -110,9 +110,84 @@ const getCategorySummary = async (owner: Types.ObjectId) => {
     return summary;
 };
 
+const toggleFavorite = async (fileId: string, ownerId: Types.ObjectId): Promise<IFile | null> => {
+    const file = await File.findOne({ _id: fileId, owner: ownerId, isDeleted: false });
+    if (!file) return null;
+
+    file.favorite = !file.favorite;
+    await file.save();
+    return file.toObject();
+};
+
+const getFavoriteFiles = async (ownerId: Types.ObjectId): Promise<IFile[]> => {
+    const filesRaw = await File.find({
+        owner: ownerId,
+        isDeleted: false,
+        favorite: true,
+    })
+        .sort({ createdAt: -1 })
+        .populate("owner")
+        .exec();
+
+    const files = filesRaw.map((f: any) => {
+        const fileObj = f.toObject();
+
+        if (fileObj.owner && typeof fileObj.owner.storageLimit === "number") {
+            fileObj.owner.storageLimit = formatBytes(fileObj.owner.storageLimit);
+        }
+        if (fileObj.size && typeof fileObj.size === "number") {
+            fileObj.size = formatBytes(fileObj.size);
+        }
+
+        return fileObj;
+    });
+
+    return files;
+};
+
+const renameFile = async (fileId: string, ownerId: Types.ObjectId, newName: string): Promise<IFile | null> => {
+    return File.findOneAndUpdate({ _id: fileId, owner: ownerId, isDeleted: false }, { name: newName }, { new: true }).lean();
+};
+
+interface DateRangeQuery {
+    owner: Types.ObjectId;
+    start?: Date;
+    end?: Date;
+}
+
+const getFilesByDateRange = async (q: DateRangeQuery): Promise<IFile[]> => {
+    const filter: any = {
+        owner: q.owner,
+        isDeleted: false,
+    };
+
+    if (q.start || q.end) {
+        filter.createdAt = {};
+        if (q.start) filter.createdAt.$gte = q.start;
+        if (q.end) filter.createdAt.$lte = q.end;
+    }
+
+    const raw = await File.find(filter).sort({ createdAt: -1 }).populate("owner").exec();
+
+    return raw.map((f: any) => {
+        const o = f.toObject();
+        if (o.owner && typeof o.owner.storageLimit === "number") {
+            o.owner.storageLimit = formatBytes(o.owner.storageLimit);
+        }
+        if (o.size && typeof o.size === "number") {
+            o.size = formatBytes(o.size);
+        }
+        return o;
+    });
+};
+
 export const FileServices = {
     createFile,
     getAllFiles,
     getStorageSummary,
     getCategorySummary,
+    toggleFavorite,
+    getFavoriteFiles,
+    renameFile,
+    getFilesByDateRange,
 };

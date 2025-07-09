@@ -40,6 +40,14 @@ const fileSchema = new Schema<IFile>(
             type: Boolean,
             default: false,
         },
+        secretFolder: {
+            type: Boolean,
+            default: false,
+        },
+        favorite: {
+            type: Boolean,
+            default: false,
+        },
     },
     {
         timestamps: true,

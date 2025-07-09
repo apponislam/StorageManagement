@@ -8,6 +8,8 @@ export interface IFile {
     type: string;
     owner: Types.ObjectId;
     parentFolder?: Types.ObjectId;
+    secretFolder?: boolean;
+    favorite?: boolean;
     createdAt?: Date;
     updatedAt?: Date;
     isDeleted?: boolean;
