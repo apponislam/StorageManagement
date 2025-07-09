@@ -24,4 +24,8 @@ router.patch("/myfiles/:fileId/rename", auth(), validateRequest(updateFileSchema
 
 router.get("/myfiles/by-date", auth(), FileController.getFilesByDate);
 
+router.post("/myfiles/:fileId/duplicate", auth(), FileController.duplicateFile);
+
+router.post("/myfiles/:fileId/copy-to/:folderId", auth(), FileController.copyToFolder);
+
 export const fileRoute = router;

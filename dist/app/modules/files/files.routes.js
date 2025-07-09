@@ -20,4 +20,6 @@ router.patch("/myfiles/:fileId/favorite", (0, auth_1.default)(), files_controlle
 router.get("/myfiles/favorites", (0, auth_1.default)(), files_controller_1.FileController.getFavorites);
 router.patch("/myfiles/:fileId/rename", (0, auth_1.default)(), (0, validateRequest_1.default)(files_validation_1.updateFileSchema), files_controller_1.FileController.renameFileController);
 router.get("/myfiles/by-date", (0, auth_1.default)(), files_controller_1.FileController.getFilesByDate);
+router.post("/myfiles/:fileId/duplicate", (0, auth_1.default)(), files_controller_1.FileController.duplicateFile);
+router.post("/myfiles/:fileId/copy-to/:folderId", (0, auth_1.default)(), files_controller_1.FileController.copyToFolder);
 exports.fileRoute = router;

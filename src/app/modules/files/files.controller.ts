@@ -252,6 +252,66 @@ const getFilesByDate = catchAsync(async (req, res) => {
     });
 });
 
+const duplicateFile = catchAsync(async (req, res) => {
+    if (!req.user?._id) {
+        return sendResponse(res, {
+            statusCode: httpStatus.UNAUTHORIZED,
+            success: false,
+            message: "Unauthorized",
+            data: null,
+        });
+    }
+
+    const newFile = await FileServices.duplicateFile(req.params.fileId, new Types.ObjectId(req.user._id));
+
+    if (!newFile) {
+        return sendResponse(res, {
+            statusCode: httpStatus.NOT_FOUND,
+            success: false,
+            message: "File not found or you do not have permission",
+            data: null,
+        });
+    }
+
+    sendResponse(res, {
+        statusCode: httpStatus.CREATED,
+        success: true,
+        message: "File duplicated successfully",
+        data: newFile,
+    });
+});
+
+const copyToFolder = catchAsync(async (req, res) => {
+    if (!req.user?._id) {
+        return sendResponse(res, {
+            statusCode: httpStatus.UNAUTHORIZED,
+            success: false,
+            message: "Unauthorized",
+            data: null,
+        });
+    }
+
+    const { fileId, folderId } = req.params;
+
+    const newFile = await FileServices.copyFileToFolder(fileId, new Types.ObjectId(req.user._id), new Types.ObjectId(folderId));
+
+    if (!newFile) {
+        return sendResponse(res, {
+            statusCode: httpStatus.NOT_FOUND,
+            success: false,
+            message: "File or destination folder not found / no permission",
+            data: null,
+        });
+    }
+
+    sendResponse(res, {
+        statusCode: httpStatus.CREATED,
+        success: true,
+        message: "File copied to folder successfully",
+        data: newFile,
+    });
+});
+
 export const FileController = {
     createFile,
     getAllFiles,
@@ -261,4 +321,6 @@ export const FileController = {
     getFavorites,
     renameFileController,
     getFilesByDate,
+    duplicateFile,
+    copyToFolder,
 };

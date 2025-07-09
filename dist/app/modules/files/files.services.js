@@ -17,6 +17,7 @@ const mongoose_1 = require("mongoose");
 const files_model_1 = require("./files.model");
 const auth_model_1 = __importDefault(require("../auth/auth.model"));
 const formatBytes_1 = require("../../utils/formatBytes");
+const folders_model_1 = require("../folders/folders.model");
 const notesExt = ["txt", "doc", "docx", "rtf", "odt", "md"];
 const imageExt = ["png", "jpg", "jpeg", "gif", "webp", "bmp", "svg", "tif", "tiff", "heic", "avif"];
 const pdfExt = ["pdf"];
@@ -158,6 +159,59 @@ const getFilesByDateRange = (q) => __awaiter(void 0, void 0, void 0, function* (
         return o;
     });
 });
+const duplicateFile = (fileId, ownerId) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    const original = yield files_model_1.File.findOne({
+        _id: fileId,
+        owner: ownerId,
+        isDeleted: false,
+    }).lean();
+    if (!original)
+        return null;
+    const generatedName = `${original.name}_dup_${Date.now()}`;
+    const payload = {
+        name: generatedName,
+        path: original.path,
+        size: original.size,
+        type: original.type,
+        owner: ownerId,
+        parentFolder: original.parentFolder,
+        secretFolder: (_a = original.secretFolder) !== null && _a !== void 0 ? _a : false,
+        favorite: false,
+        isDeleted: false,
+    };
+    return files_model_1.File.create(payload);
+});
+const copyFileToFolder = (fileId, ownerId, destFolderId) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    const destFolder = yield folders_model_1.Folder.findOne({
+        _id: destFolderId,
+        owner: ownerId,
+        isDeleted: false,
+    }).lean();
+    if (!destFolder)
+        return null;
+    const original = yield files_model_1.File.findOne({
+        _id: fileId,
+        owner: ownerId,
+        isDeleted: false,
+    }).lean();
+    if (!original)
+        return null;
+    const copy = yield files_model_1.File.create({
+        name: `${original.name}_copy_${Date.now()}`,
+        path: original.path,
+        size: original.size,
+        type: original.type,
+        owner: ownerId,
+        parentFolder: destFolderId,
+        secretFolder: (_a = original.secretFolder) !== null && _a !== void 0 ? _a : false,
+        favorite: false,
+        isDeleted: false,
+    });
+    yield folders_model_1.Folder.updateOne({ _id: destFolderId }, { $addToSet: { files: copy._id } });
+    return copy.toObject();
+});
 exports.FileServices = {
     createFile,
     getAllFiles,
@@ -167,4 +221,6 @@ exports.FileServices = {
     getFavoriteFiles,
     renameFile,
     getFilesByDateRange,
+    duplicateFile,
+    copyFileToFolder,
 };

@@ -235,6 +235,59 @@ const getFilesByDate = (0, catchAsync_1.default)((req, res) => __awaiter(void 0,
         data: files,
     });
 }));
+const duplicateFile = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    if (!((_a = req.user) === null || _a === void 0 ? void 0 : _a._id)) {
+        return (0, sendResponse_1.default)(res, {
+            statusCode: http_status_1.default.UNAUTHORIZED,
+            success: false,
+            message: "Unauthorized",
+            data: null,
+        });
+    }
+    const newFile = yield files_services_1.FileServices.duplicateFile(req.params.fileId, new mongoose_1.Types.ObjectId(req.user._id));
+    if (!newFile) {
+        return (0, sendResponse_1.default)(res, {
+            statusCode: http_status_1.default.NOT_FOUND,
+            success: false,
+            message: "File not found or you do not have permission",
+            data: null,
+        });
+    }
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.CREATED,
+        success: true,
+        message: "File duplicated successfully",
+        data: newFile,
+    });
+}));
+const copyToFolder = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    if (!((_a = req.user) === null || _a === void 0 ? void 0 : _a._id)) {
+        return (0, sendResponse_1.default)(res, {
+            statusCode: http_status_1.default.UNAUTHORIZED,
+            success: false,
+            message: "Unauthorized",
+            data: null,
+        });
+    }
+    const { fileId, folderId } = req.params;
+    const newFile = yield files_services_1.FileServices.copyFileToFolder(fileId, new mongoose_1.Types.ObjectId(req.user._id), new mongoose_1.Types.ObjectId(folderId));
+    if (!newFile) {
+        return (0, sendResponse_1.default)(res, {
+            statusCode: http_status_1.default.NOT_FOUND,
+            success: false,
+            message: "File or destination folder not found / no permission",
+            data: null,
+        });
+    }
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.CREATED,
+        success: true,
+        message: "File copied to folder successfully",
+        data: newFile,
+    });
+}));
 exports.FileController = {
     createFile,
     getAllFiles,
@@ -244,4 +297,6 @@ exports.FileController = {
     getFavorites,
     renameFileController,
     getFilesByDate,
+    duplicateFile,
+    copyToFolder,
 };

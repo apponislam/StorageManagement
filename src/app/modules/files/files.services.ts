@@ -3,6 +3,7 @@ import { IFile } from "./files.interface";
 import { File } from "./files.model";
 import User from "../auth/auth.model";
 import { formatBytes } from "../../utils/formatBytes";
+import { Folder } from "../folders/folders.model";
 
 const notesExt = ["txt", "doc", "docx", "rtf", "odt", "md"];
 const imageExt = ["png", "jpg", "jpeg", "gif", "webp", "bmp", "svg", "tif", "tiff", "heic", "avif"];
@@ -181,6 +182,64 @@ const getFilesByDateRange = async (q: DateRangeQuery): Promise<IFile[]> => {
     });
 };
 
+const duplicateFile = async (fileId: string, ownerId: Types.ObjectId): Promise<IFile | null> => {
+    const original = await File.findOne({
+        _id: fileId,
+        owner: ownerId,
+        isDeleted: false,
+    }).lean();
+
+    if (!original) return null;
+
+    const generatedName = `${original.name}_dup_${Date.now()}`;
+
+    const payload: Partial<IFile> = {
+        name: generatedName,
+        path: original.path,
+        size: original.size,
+        type: original.type,
+        owner: ownerId,
+        parentFolder: original.parentFolder,
+        secretFolder: original.secretFolder ?? false,
+        favorite: false,
+        isDeleted: false,
+    };
+
+    return File.create(payload);
+};
+
+const copyFileToFolder = async (fileId: string, ownerId: Types.ObjectId, destFolderId: Types.ObjectId): Promise<IFile | null> => {
+    const destFolder = await Folder.findOne({
+        _id: destFolderId,
+        owner: ownerId,
+        isDeleted: false,
+    }).lean();
+    if (!destFolder) return null;
+
+    const original = await File.findOne({
+        _id: fileId,
+        owner: ownerId,
+        isDeleted: false,
+    }).lean();
+    if (!original) return null;
+
+    const copy = await File.create({
+        name: `${original.name}_copy_${Date.now()}`,
+        path: original.path,
+        size: original.size,
+        type: original.type,
+        owner: ownerId,
+        parentFolder: destFolderId,
+        secretFolder: original.secretFolder ?? false,
+        favorite: false,
+        isDeleted: false,
+    });
+
+    await Folder.updateOne({ _id: destFolderId }, { $addToSet: { files: copy._id } });
+
+    return copy.toObject();
+};
+
 export const FileServices = {
     createFile,
     getAllFiles,
@@ -190,4 +249,6 @@ export const FileServices = {
     getFavoriteFiles,
     renameFile,
     getFilesByDateRange,
+    duplicateFile,
+    copyFileToFolder,
 };
