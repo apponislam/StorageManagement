@@ -29,6 +29,7 @@ const http_status_1 = __importDefault(require("http-status"));
 const sendResponse_1 = __importDefault(require("../../utils/sendResponse"));
 const auth_services_1 = require("./auth.services");
 const config_1 = __importDefault(require("../../config"));
+const AppError_1 = __importDefault(require("../../errors/AppError"));
 const createUser = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const _a = req.body, { password, confirmPassword } = _a, rest = __rest(_a, ["password", "confirmPassword"]);
     if (password !== confirmPassword) {
@@ -55,14 +56,14 @@ const createUser = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, voi
     });
 }));
 const googleCallback = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    if (!req.user)
-        throw new Error("Google authentication failed");
+    if (!req.user) {
+        throw new AppError_1.default(http_status_1.default.UNAUTHORIZED, "Google authentication failed");
+    }
     const { googleId, email = "", photo = "", username = "" } = req.user;
-    // ✅ Removed redundant prettifyName(username) since Passport already formatted it
     const { user, accessToken, refreshToken } = yield auth_services_1.UserService.googleSignService({
         id: googleId,
         email,
-        name: username, // Directly pass username (already formatted)
+        name: username,
         photo,
     });
     res.cookie("refreshToken", refreshToken, {

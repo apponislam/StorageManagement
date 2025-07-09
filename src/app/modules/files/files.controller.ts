@@ -62,7 +62,7 @@ const getAllFiles = catchAsync(async (req: Request, res: Response) => {
         owner: new Types.ObjectId(req.user._id),
         parentFolder: req.query.parentFolder as string | undefined,
         isDeleted: false,
-        type: req.query.type as "notes" | "images" | "pdf" | undefined, // ⇦ NEW
+        type: req.query.type as "notes" | "images" | "pdf" | undefined,
     });
 
     sendResponse(res, {

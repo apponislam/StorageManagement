@@ -6,6 +6,7 @@ import sendResponse from "../../utils/sendResponse";
 import { UserService } from "./auth.services";
 import config from "../../config";
 import { prettifyName } from "../../utils/prettifyName";
+import AppError from "../../errors/AppError";
 
 const createUser = catchAsync(async (req: Request, res: Response) => {
     const { password, confirmPassword, ...rest } = req.body;
@@ -38,15 +39,16 @@ const createUser = catchAsync(async (req: Request, res: Response) => {
 });
 
 const googleCallback = catchAsync(async (req: Request, res: Response) => {
-    if (!req.user) throw new Error("Google authentication failed");
+    if (!req.user) {
+        throw new AppError(httpStatus.UNAUTHORIZED, "Google authentication failed");
+    }
 
     const { googleId, email = "", photo = "", username = "" } = req.user as any;
 
-    // ✅ Removed redundant prettifyName(username) since Passport already formatted it
     const { user, accessToken, refreshToken } = await UserService.googleSignService({
         id: googleId,
         email,
-        name: username, // Directly pass username (already formatted)
+        name: username,
         photo,
     });
 

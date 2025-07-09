@@ -6,6 +6,8 @@ import path from "path";
 import bcrypt from "bcrypt";
 import { sendEmail } from "../../utils/email";
 import { prettifyName } from "../../utils/prettifyName";
+import AppError from "../../errors/AppError";
+import httpStatus from "http-status";
 
 // const FIFTEEN_GB_IN_BYTES = 15 * 1024 * 1024 * 1024;
 
@@ -26,7 +28,7 @@ const createUser = async (file: any, userData: IUser) => {
 
     const jwtPayload: IJwtPayload = {
         _id: result._id.toString(),
-        username: result.username, // Already formatted
+        username: result.username,
         email: result.email,
         photo: result.photo,
         isDeleted: result.isDeleted,
@@ -49,7 +51,7 @@ const googleSignService = async (profile: { id: string; email: string; name: str
 
     if (!user) {
         const userData = {
-            username: profile.name, // Already prettified in Passport
+            username: profile.name,
             email: profile.email,
             photo: profile.photo,
             isDeleted: false,
@@ -96,20 +98,20 @@ const loginUser = async (email: string, password: string) => {
     const user = await User.findOne({ email }).select("+password +authType");
 
     if (!user) {
-        throw new Error("User not found");
+        throw new AppError(httpStatus.NOT_FOUND, "User not found");
     }
 
     if (user.isDeleted) {
-        throw new Error("This account has been deleted");
+        throw new AppError(httpStatus.FORBIDDEN, "This account has been deleted");
     }
 
     if (user.authType === "google") {
-        throw new Error("Please sign in with Google");
+        throw new AppError(httpStatus.UNAUTHORIZED, "Please sign in with Google");
     }
 
     const isPasswordMatched = await User.isPasswordMatched(password, user.password!);
     if (!isPasswordMatched) {
-        throw new Error("Incorrect password");
+        throw new AppError(httpStatus.UNAUTHORIZED, "Incorrect password");
     }
 
     const jwtPayload: IJwtPayload = {
@@ -150,20 +152,20 @@ const changePassword = async (userId: string, currentPassword: string, newPasswo
     const user = await User.findById(userId).select("+password +authType");
 
     if (!user) {
-        throw new Error("User not found");
+        throw new AppError(httpStatus.NOT_FOUND, "User not found");
     }
 
     if (user.isDeleted) {
-        throw new Error("This account has been deleted");
+        throw new AppError(httpStatus.FORBIDDEN, "This account has been deleted");
     }
 
     if (user.authType === "google") {
-        throw new Error("Google-authenticated users cannot change password");
+        throw new AppError(httpStatus.UNAUTHORIZED, "Please sign in with Google");
     }
 
     const isPasswordMatched = await User.isPasswordMatched(currentPassword, user.password!);
     if (!isPasswordMatched) {
-        throw new Error("Current password is incorrect");
+        throw new AppError(httpStatus.UNAUTHORIZED, "Incorrect password");
     }
 
     user.password = await bcrypt.hash(newPassword, Number(config.bcrypt_salt_rounds));
@@ -203,8 +205,13 @@ const generateOTP = (): string => {
 
 const forgotPassword = async (email: string): Promise<{ email: string }> => {
     const user = await User.findOne({ email });
-    if (!user) throw new Error("User not found");
-    if (user.authType === "google") throw new Error("Google users must use Google login");
+    if (!user) {
+        throw new AppError(httpStatus.NOT_FOUND, "User not found");
+    }
+
+    if (user.authType === "google") {
+        throw new AppError(httpStatus.FORBIDDEN, "Google users must sign in with Google");
+    }
 
     const otp = generateOTP();
     const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
@@ -222,10 +229,16 @@ const forgotPassword = async (email: string): Promise<{ email: string }> => {
 
 const verifyOtp = async (email: string, otp: string): Promise<{ verified: boolean }> => {
     const user = await User.findOne({ email });
-    if (!user?.resetPass?.passwordResetOTP) throw new Error("OTP not found");
-    if (user.resetPass.passwordResetOTP !== otp) throw new Error("Invalid OTP");
+    if (!user?.resetPass?.passwordResetOTP) {
+        throw new AppError(httpStatus.NOT_FOUND, "OTP not found");
+    }
+
+    if (user.resetPass.passwordResetOTP !== otp) {
+        throw new AppError(httpStatus.BAD_REQUEST, "Invalid OTP");
+    }
+
     if (user.resetPass.passwordResetExpire && user.resetPass.passwordResetExpire < new Date()) {
-        throw new Error("OTP expired");
+        throw new AppError(httpStatus.GONE, "OTP expired");
     }
     return { verified: true };
 };
@@ -236,13 +249,15 @@ const resendOtp = async (email: string): Promise<{ email: string }> => {
 
 const resetPassword = async (email: string, otp: string, newPassword: string, confirmPassword: string) => {
     if (newPassword !== confirmPassword) {
-        throw new Error("Passwords do not match");
+        throw new AppError(httpStatus.BAD_REQUEST, "Passwords do not match");
     }
 
     await verifyOtp(email, otp);
 
     const user = await User.findOne({ email });
-    if (!user) throw new Error("User not found");
+    if (!user) {
+        throw new AppError(httpStatus.NOT_FOUND, "User not found");
+    }
 
     user.password = await bcrypt.hash(newPassword, Number(config.bcrypt_salt_rounds));
     user.resetPass = undefined;

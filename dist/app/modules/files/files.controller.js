@@ -68,7 +68,7 @@ const getAllFiles = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, vo
         owner: new mongoose_1.Types.ObjectId(req.user._id),
         parentFolder: req.query.parentFolder,
         isDeleted: false,
-        type: req.query.type, // ⇦ NEW
+        type: req.query.type,
     });
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,

@@ -28,6 +28,8 @@ const mongoose_1 = require("mongoose");
 const folders_model_1 = require("./folders.model");
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const config_1 = __importDefault(require("../../config"));
+const AppError_1 = __importDefault(require("../../errors/AppError"));
+const http_status_1 = __importDefault(require("http-status"));
 const encryptPin = (pin) => __awaiter(void 0, void 0, void 0, function* () {
     return yield bcrypt_1.default.hash(pin.toString(), Number(config_1.default.bcrypt_salt_rounds));
 });
@@ -47,16 +49,17 @@ const handleSecretFolder = (payload) => __awaiter(void 0, void 0, void 0, functi
         .lean();
     if (existingFolder === null || existingFolder === void 0 ? void 0 : existingFolder.pin) {
         const isMatch = yield comparePin(pin, existingFolder.pin);
-        if (!isMatch)
-            throw new Error("Invalid PIN");
+        if (!isMatch) {
+            throw new AppError_1.default(http_status_1.default.UNAUTHORIZED, "Invalid PIN");
+        }
         const { pin: _ } = existingFolder, folderData = __rest(existingFolder, ["pin"]);
         return { action: "accessed", folder: folderData };
     }
     if (!confirmPin) {
-        throw new Error("PIN confirmation required to create secret folder");
+        throw new AppError_1.default(http_status_1.default.BAD_REQUEST, "PIN confirmation required to create secret folder");
     }
     if (pin !== confirmPin) {
-        throw new Error("PIN and confirmation PIN don't match");
+        throw new AppError_1.default(http_status_1.default.BAD_REQUEST, "PIN and confirmation PIN don't match");
     }
     const hashedPin = yield encryptPin(Number(pin));
     const newFolder = yield folders_model_1.Folder.create({
@@ -86,8 +89,9 @@ const getFolder = (folderId, userId) => __awaiter(void 0, void 0, void 0, functi
         .populate("files")
         .populate("subfolders")
         .lean();
-    if (!folder)
-        throw new Error("Folder not found");
+    if (!folder) {
+        throw new AppError_1.default(http_status_1.default.NOT_FOUND, "Folder not found");
+    }
     return folder;
 });
 const updateFolder = (params) => __awaiter(void 0, void 0, void 0, function* () {
@@ -102,14 +106,16 @@ const updateFolder = (params) => __awaiter(void 0, void 0, void 0, function* () 
         .populate("files")
         .populate("subfolders")
         .lean();
-    if (!folder)
-        throw new Error("Folder not found");
+    if (!folder) {
+        throw new AppError_1.default(http_status_1.default.NOT_FOUND, "Folder not found");
+    }
     return folder;
 });
 const deleteFolder = (folderId, userId) => __awaiter(void 0, void 0, void 0, function* () {
     const folder = yield folders_model_1.Folder.findOneAndUpdate({ _id: new mongoose_1.Types.ObjectId(folderId), owner: userId }, { isDeleted: true }, { new: true });
-    if (!folder)
-        throw new Error("Folder not found");
+    if (!folder) {
+        throw new AppError_1.default(http_status_1.default.NOT_FOUND, "Folder not found");
+    }
     return folder;
 });
 exports.FolderServices = { handleSecretFolder, createFolder, getFolder, updateFolder, deleteFolder };

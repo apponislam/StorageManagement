@@ -2,6 +2,8 @@ import { Types } from "mongoose";
 import { Folder } from "./folders.model";
 import bcrypt from "bcrypt";
 import config from "../../config";
+import AppError from "../../errors/AppError";
+import httpStatus from "http-status";
 
 const encryptPin = async (pin: number): Promise<string> => {
     return await bcrypt.hash(pin.toString(), Number(config.bcrypt_salt_rounds));
@@ -26,18 +28,20 @@ const handleSecretFolder = async (payload: { pin: string; confirmPin?: string; o
 
     if (existingFolder?.pin) {
         const isMatch = await comparePin(pin, existingFolder.pin);
-        if (!isMatch) throw new Error("Invalid PIN");
+        if (!isMatch) {
+            throw new AppError(httpStatus.UNAUTHORIZED, "Invalid PIN");
+        }
 
         const { pin: _, ...folderData } = existingFolder;
         return { action: "accessed", folder: folderData };
     }
 
     if (!confirmPin) {
-        throw new Error("PIN confirmation required to create secret folder");
+        throw new AppError(httpStatus.BAD_REQUEST, "PIN confirmation required to create secret folder");
     }
 
     if (pin !== confirmPin) {
-        throw new Error("PIN and confirmation PIN don't match");
+        throw new AppError(httpStatus.BAD_REQUEST, "PIN and confirmation PIN don't match");
     }
 
     const hashedPin = await encryptPin(Number(pin));
@@ -73,7 +77,11 @@ const getFolder = async (folderId: string, userId: Types.ObjectId) => {
         .populate("files")
         .populate("subfolders")
         .lean();
-    if (!folder) throw new Error("Folder not found");
+
+    if (!folder) {
+        throw new AppError(httpStatus.NOT_FOUND, "Folder not found");
+    }
+
     return folder;
 };
 
@@ -98,13 +106,18 @@ const updateFolder = async (params: {
         .populate("subfolders")
         .lean();
 
-    if (!folder) throw new Error("Folder not found");
+    if (!folder) {
+        throw new AppError(httpStatus.NOT_FOUND, "Folder not found");
+    }
     return folder;
 };
 
 const deleteFolder = async (folderId: string, userId: Types.ObjectId) => {
     const folder = await Folder.findOneAndUpdate({ _id: new Types.ObjectId(folderId), owner: userId }, { isDeleted: true }, { new: true });
-    if (!folder) throw new Error("Folder not found");
+
+    if (!folder) {
+        throw new AppError(httpStatus.NOT_FOUND, "Folder not found");
+    }
     return folder;
 };
 

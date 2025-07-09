@@ -21,6 +21,8 @@ const path_1 = __importDefault(require("path"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const email_1 = require("../../utils/email");
 const prettifyName_1 = require("../../utils/prettifyName");
+const AppError_1 = __importDefault(require("../../errors/AppError"));
+const http_status_1 = __importDefault(require("http-status"));
 // const FIFTEEN_GB_IN_BYTES = 15 * 1024 * 1024 * 1024;
 const createUser = (file, userData) => __awaiter(void 0, void 0, void 0, function* () {
     userData.username = (0, prettifyName_1.prettifyName)(userData.username);
@@ -36,7 +38,7 @@ const createUser = (file, userData) => __awaiter(void 0, void 0, void 0, functio
     const result = yield auth_model_1.User.create(userData);
     const jwtPayload = {
         _id: result._id.toString(),
-        username: result.username, // Already formatted
+        username: result.username,
         email: result.email,
         photo: result.photo,
         isDeleted: result.isDeleted,
@@ -54,7 +56,7 @@ const googleSignService = (profile) => __awaiter(void 0, void 0, void 0, functio
     });
     if (!user) {
         const userData = {
-            username: profile.name, // Already prettified in Passport
+            username: profile.name,
             email: profile.email,
             photo: profile.photo,
             isDeleted: false,
@@ -97,17 +99,17 @@ const googleSignService = (profile) => __awaiter(void 0, void 0, void 0, functio
 const loginUser = (email, password) => __awaiter(void 0, void 0, void 0, function* () {
     const user = yield auth_model_1.User.findOne({ email }).select("+password +authType");
     if (!user) {
-        throw new Error("User not found");
+        throw new AppError_1.default(http_status_1.default.NOT_FOUND, "User not found");
     }
     if (user.isDeleted) {
-        throw new Error("This account has been deleted");
+        throw new AppError_1.default(http_status_1.default.FORBIDDEN, "This account has been deleted");
     }
     if (user.authType === "google") {
-        throw new Error("Please sign in with Google");
+        throw new AppError_1.default(http_status_1.default.UNAUTHORIZED, "Please sign in with Google");
     }
     const isPasswordMatched = yield auth_model_1.User.isPasswordMatched(password, user.password);
     if (!isPasswordMatched) {
-        throw new Error("Incorrect password");
+        throw new AppError_1.default(http_status_1.default.UNAUTHORIZED, "Incorrect password");
     }
     const jwtPayload = {
         _id: user._id.toString(),
@@ -138,17 +140,17 @@ const deleteUser = (userId) => __awaiter(void 0, void 0, void 0, function* () {
 const changePassword = (userId, currentPassword, newPassword) => __awaiter(void 0, void 0, void 0, function* () {
     const user = yield auth_model_1.User.findById(userId).select("+password +authType");
     if (!user) {
-        throw new Error("User not found");
+        throw new AppError_1.default(http_status_1.default.NOT_FOUND, "User not found");
     }
     if (user.isDeleted) {
-        throw new Error("This account has been deleted");
+        throw new AppError_1.default(http_status_1.default.FORBIDDEN, "This account has been deleted");
     }
     if (user.authType === "google") {
-        throw new Error("Google-authenticated users cannot change password");
+        throw new AppError_1.default(http_status_1.default.UNAUTHORIZED, "Please sign in with Google");
     }
     const isPasswordMatched = yield auth_model_1.User.isPasswordMatched(currentPassword, user.password);
     if (!isPasswordMatched) {
-        throw new Error("Current password is incorrect");
+        throw new AppError_1.default(http_status_1.default.UNAUTHORIZED, "Incorrect password");
     }
     user.password = yield bcrypt_1.default.hash(newPassword, Number(config_1.default.bcrypt_salt_rounds));
     yield user.save();
@@ -181,10 +183,12 @@ const generateOTP = () => {
 };
 const forgotPassword = (email) => __awaiter(void 0, void 0, void 0, function* () {
     const user = yield auth_model_1.User.findOne({ email });
-    if (!user)
-        throw new Error("User not found");
-    if (user.authType === "google")
-        throw new Error("Google users must use Google login");
+    if (!user) {
+        throw new AppError_1.default(http_status_1.default.NOT_FOUND, "User not found");
+    }
+    if (user.authType === "google") {
+        throw new AppError_1.default(http_status_1.default.FORBIDDEN, "Google users must sign in with Google");
+    }
     const otp = generateOTP();
     const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
     user.resetPass = {
@@ -198,12 +202,14 @@ const forgotPassword = (email) => __awaiter(void 0, void 0, void 0, function* ()
 const verifyOtp = (email, otp) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     const user = yield auth_model_1.User.findOne({ email });
-    if (!((_a = user === null || user === void 0 ? void 0 : user.resetPass) === null || _a === void 0 ? void 0 : _a.passwordResetOTP))
-        throw new Error("OTP not found");
-    if (user.resetPass.passwordResetOTP !== otp)
-        throw new Error("Invalid OTP");
+    if (!((_a = user === null || user === void 0 ? void 0 : user.resetPass) === null || _a === void 0 ? void 0 : _a.passwordResetOTP)) {
+        throw new AppError_1.default(http_status_1.default.NOT_FOUND, "OTP not found");
+    }
+    if (user.resetPass.passwordResetOTP !== otp) {
+        throw new AppError_1.default(http_status_1.default.BAD_REQUEST, "Invalid OTP");
+    }
     if (user.resetPass.passwordResetExpire && user.resetPass.passwordResetExpire < new Date()) {
-        throw new Error("OTP expired");
+        throw new AppError_1.default(http_status_1.default.GONE, "OTP expired");
     }
     return { verified: true };
 });
@@ -212,12 +218,13 @@ const resendOtp = (email) => __awaiter(void 0, void 0, void 0, function* () {
 });
 const resetPassword = (email, otp, newPassword, confirmPassword) => __awaiter(void 0, void 0, void 0, function* () {
     if (newPassword !== confirmPassword) {
-        throw new Error("Passwords do not match");
+        throw new AppError_1.default(http_status_1.default.BAD_REQUEST, "Passwords do not match");
     }
     yield verifyOtp(email, otp);
     const user = yield auth_model_1.User.findOne({ email });
-    if (!user)
-        throw new Error("User not found");
+    if (!user) {
+        throw new AppError_1.default(http_status_1.default.NOT_FOUND, "User not found");
+    }
     user.password = yield bcrypt_1.default.hash(newPassword, Number(config_1.default.bcrypt_salt_rounds));
     user.resetPass = undefined;
     yield user.save();
