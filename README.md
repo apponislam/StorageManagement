@@ -1,5 +1,7 @@
 # Storage Management API
 
+🌐 **Live Demo**: [https://storage.4ppon.com/](https://storage.4ppon.com/)
+
 ```bash
 git clone https://github.com/apponislam/StorageManagement.git
 cd StorageManagement
@@ -119,20 +121,16 @@ npm run build
 npm start
 ```
 
-## 🚀 Postman Collection
+## 📁 Postman Collection
 
 ### Direct Download
 
-[Download Postman Collection](Storage%20Management.postman_collection.json) (Right-click → Save Link As)
+[Download Postman Collection](https://github.com/apponislam/StorageManagement/raw/main/Storage%20Management.postman_collection.json)
 
 ### Import Instructions
 
-1. Download the collection file using the link above
-2. In Postman:
-    - Click "Import" in top-left corner
-    - Select the downloaded file
-    - All endpoints will be pre-configured with examples
-      `
+1. Click the link above to download automatically
+2. In Postman: Import → Select the downloaded file
 
 ## 📚 Complete API Documentation
 
