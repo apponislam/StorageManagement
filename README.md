@@ -119,6 +119,21 @@ npm run build
 npm start
 ```
 
+## 🚀 Postman Collection
+
+### Direct Download
+
+[Download Postman Collection](Storage%20Management.postman_collection.json) (Right-click → Save Link As)
+
+### Import Instructions
+
+1. Download the collection file using the link above
+2. In Postman:
+    - Click "Import" in top-left corner
+    - Select the downloaded file
+    - All endpoints will be pre-configured with examples
+      `
+
 ## 📚 Complete API Documentation
 
 ### 🔐 Authentication Endpoints

@@ -1,0 +1,867 @@
+{
+	"info": {
+		"_postman_id": "b7c475ce-765e-4a97-bba4-e5b1ca674e14",
+		"name": "Storage Management",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "39833218"
+	},
+	"item": [
+		{
+			"name": "Auth Actions",
+			"item": [
+				{
+					"name": "Register user",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "",
+								"value": "",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"username\": \"john_doe 55\",\r\n  \"email\": \"john.doe55@example.com\",\r\n  \"password\": \"password\",\r\n  \"confirmPassword\": \"password\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{local-link}}/api/v1/auth/register",
+							"host": [
+								"{{local-link}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login User",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"email\": \"john.doe1@example.com\",\r\n  \"password\": \"password\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{local-link}}/api/v1/auth/login",
+							"host": [
+								"{{local-link}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Deactive User",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2ODZiYjJlYWY5MWU5NGM5NGMzMDMxOWIiLCJ1c2VybmFtZSI6ImpvaG5fZG9lIiwiZW1haWwiOiJqb2huLmRvZTExQGV4YW1wbGUuY29tIiwicGhvdG8iOiIiLCJpc0RlbGV0ZWQiOmZhbHNlLCJzdG9yYWdlTGltaXQiOjE2MTA2MTI3MzYwLCJpYXQiOjE3NTE4ODk2NzksImV4cCI6MTc1MTg4OTk3OX0.L8Dn94Ll7i16SS6ZZ2akeK0xNlTqdhHhAaY4N7JhBLQ",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{local-link}}/api/v1/auth/delete",
+							"host": [
+								"{{local-link}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"delete"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Change Password",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2ODZiZDM5NDQyM2FlNWJlN2JhNzgyY2IiLCJ1c2VybmFtZSI6ImpvaG5fZG9lIiwiZW1haWwiOiJqb2huLmRvZTFAZXhhbXBsZS5jb20iLCJwaG90byI6IiIsImlzRGVsZXRlZCI6ZmFsc2UsInN0b3JhZ2VMaW1pdCI6MTYxMDYxMjczNjAsImlhdCI6MTc1MTg5Njk4MCwiZXhwIjoxNzUxODk3MjgwfQ.ynWR9hG1hXP9CuqwJOIpHYJB9wnFThN0uFu5CKTFWa8",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"currentPassword\": \"newPassword123!\",\r\n  \"newPassword\": \"password\",\r\n  \"confirmPassword\": \"password\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{local-link}}/api/v1/auth/change-password",
+							"host": [
+								"{{local-link}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"change-password"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Google Sign in / Sign Up",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{local-link}}/api/v1/auth/google",
+							"host": [
+								"{{local-link}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"google"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Forgot Password",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"11appon11@gmail.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{local-link}}/api/v1/auth/forgot-password",
+							"host": [
+								"{{local-link}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"forgot-password"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Verify OTP",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"11appon11@gmail.com\",\r\n    \"otp\": \"691900\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{local-link}}/api/v1/auth/verify-otp",
+							"host": [
+								"{{local-link}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"verify-otp"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Resend OTP",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"11appon11@gmail.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{local-link}}/api/v1/auth/resend-otp",
+							"host": [
+								"{{local-link}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"resend-otp"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "New Request",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"11appon11@gmail.com\",\r\n      \"otp\": \"665245\",\r\n  \"newPassword\": \"password2\",\r\n  \"confirmPassword\": \"password2\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{local-link}}/api/v1/auth/reset-password",
+							"host": [
+								"{{local-link}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"reset-password"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Folders",
+			"item": [
+				{
+					"name": "Create then access Secret Folder",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2ODZkMzQyNjdjMWE3NGY4OWNhZDMwMGIiLCJ1c2VybmFtZSI6ImpvaG5fZG9lIiwiZW1haWwiOiJqb2huLmRvZTFAZXhhbXBsZS5jb20iLCJwaG90byI6IiIsImlzRGVsZXRlZCI6ZmFsc2UsInN0b3JhZ2VMaW1pdCI6MTYxMDYxMjczNjAsImF1dGhUeXBlIjoiZW1haWwiLCJpYXQiOjE3NTE5ODg2MzksImV4cCI6MTc1MTk4ODkzOX0.UHYBcSqiPAlAxJBmK9zKvPYEDMR_72e7kg1cO5ADM_4",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"pin\": \"1234\",\r\n  \"confirmPin\": \"1234\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{local-link}}/api/v1/folders/secret",
+							"host": [
+								"{{local-link}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"folders",
+								"secret"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create normal folders",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2ODZkMzQyNjdjMWE3NGY4OWNhZDMwMGIiLCJ1c2VybmFtZSI6ImpvaG5fZG9lIiwiZW1haWwiOiJqb2huLmRvZTFAZXhhbXBsZS5jb20iLCJwaG90byI6IiIsImlzRGVsZXRlZCI6ZmFsc2UsInN0b3JhZ2VMaW1pdCI6MTYxMDYxMjczNjAsImF1dGhUeXBlIjoiZW1haWwiLCJpYXQiOjE3NTE5ODkyODIsImV4cCI6MTc1MTk4OTU4Mn0.svBvLCwSo8B1y0KoXZMlz5X-AOEg5af1jNE6zNk_qIY",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"My Folder\",\r\n  \"folderType\": \"normal\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{local-link}}/api/v1/folders",
+							"host": [
+								"{{local-link}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"folders"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Personal Folder",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2ODZkMzQyNjdjMWE3NGY4OWNhZDMwMGIiLCJ1c2VybmFtZSI6ImpvaG5fZG9lIiwiZW1haWwiOiJqb2huLmRvZTFAZXhhbXBsZS5jb20iLCJwaG90byI6IiIsImlzRGVsZXRlZCI6ZmFsc2UsInN0b3JhZ2VMaW1pdCI6MTYxMDYxMjczNjAsImF1dGhUeXBlIjoiZW1haWwiLCJpYXQiOjE3NTIwMTEyOTksImV4cCI6MTc1MjA5NzY5OX0.DTkajvs55iYhCKaPuD6xzhvIY8A78AMGgkr6r7jy8No",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2ODZkMzQyNjdjMWE3NGY4OWNhZDMwMGIiLCJ1c2VybmFtZSI6ImpvaG5fZG9lIiwiZW1haWwiOiJqb2huLmRvZTFAZXhhbXBsZS5jb20iLCJwaG90byI6IiIsImlzRGVsZXRlZCI6ZmFsc2UsInN0b3JhZ2VMaW1pdCI6MTYxMDYxMjczNjAsImF1dGhUeXBlIjoiZW1haWwiLCJpYXQiOjE3NTE5ODk4MzMsImV4cCI6MTc1MTk5MDEzM30.gJdly8IPcKd7rTt9P_lpq5sXmNZqBM2mGwl53YBzXjk",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{local-link}}/api/v1/folders/686d3cb8d114f3801491a780",
+							"host": [
+								"{{local-link}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"folders",
+								"686d3cb8d114f3801491a780"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Folder",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2ODZkMzQyNjdjMWE3NGY4OWNhZDMwMGIiLCJ1c2VybmFtZSI6ImpvaG5fZG9lIiwiZW1haWwiOiJqb2huLmRvZTFAZXhhbXBsZS5jb20iLCJwaG90byI6IiIsImlzRGVsZXRlZCI6ZmFsc2UsInN0b3JhZ2VMaW1pdCI6MTYxMDYxMjczNjAsImF1dGhUeXBlIjoiZW1haWwiLCJpYXQiOjE3NTIwMDkxMjQsImV4cCI6MTc1MjA5NTUyNH0.0X5J4bu7TA15Bz9sDp7TVXmSsSGU1pGtEM1T4qrKRQA",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"My Folder 3\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{local-link}}/api/v1/folders/686d3cb8d114f3801491a780",
+							"host": [
+								"{{local-link}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"folders",
+								"686d3cb8d114f3801491a780"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete One folder",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2ODZkMzQyNjdjMWE3NGY4OWNhZDMwMGIiLCJ1c2VybmFtZSI6ImpvaG5fZG9lIiwiZW1haWwiOiJqb2huLmRvZTFAZXhhbXBsZS5jb20iLCJwaG90byI6IiIsImlzRGVsZXRlZCI6ZmFsc2UsInN0b3JhZ2VMaW1pdCI6MTYxMDYxMjczNjAsImF1dGhUeXBlIjoiZW1haWwiLCJpYXQiOjE3NTE5OTUyMTIsImV4cCI6MTc1MTk5NTUxMn0.GNlMoYJ-iFCCK-02M1TEAzGacBgWPs88taNn45qBLXA",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{local-link}}/api/v1/folders/686d3cb8d114f3801491a780",
+							"host": [
+								"{{local-link}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"folders",
+								"686d3cb8d114f3801491a780"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Files",
+			"item": [
+				{
+					"name": "Upload Files",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2ODZkMzQyNjdjMWE3NGY4OWNhZDMwMGIiLCJ1c2VybmFtZSI6ImpvaG5fZG9lIiwiZW1haWwiOiJqb2huLmRvZTFAZXhhbXBsZS5jb20iLCJwaG90byI6IiIsImlzRGVsZXRlZCI6ZmFsc2UsInN0b3JhZ2VMaW1pdCI6MTYxMDYxMjczNjAsImF1dGhUeXBlIjoiZW1haWwiLCJpYXQiOjE3NTIwMDkxMjQsImV4cCI6MTc1MjA5NTUyNH0.0X5J4bu7TA15Bz9sDp7TVXmSsSGU1pGtEM1T4qrKRQA",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/D:/Downloads/myfile.pdf"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{local-link}}/api/v1/files/upload",
+							"host": [
+								"{{local-link}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"files",
+								"upload"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All my files",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2ODZkMzQyNjdjMWE3NGY4OWNhZDMwMGIiLCJ1c2VybmFtZSI6ImpvaG5fZG9lIiwiZW1haWwiOiJqb2huLmRvZTFAZXhhbXBsZS5jb20iLCJwaG90byI6IiIsImlzRGVsZXRlZCI6ZmFsc2UsInN0b3JhZ2VMaW1pdCI6MTYxMDYxMjczNjAsImF1dGhUeXBlIjoiZW1haWwiLCJpYXQiOjE3NTIwMTEyOTksImV4cCI6MTc1MjA5NzY5OX0.DTkajvs55iYhCKaPuD6xzhvIY8A78AMGgkr6r7jy8No",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{local-link}}/api/v1/files/myfiles",
+							"host": [
+								"{{local-link}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"files",
+								"myfiles"
+							],
+							"query": [
+								{
+									"key": "",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "",
+									"value": "",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "My Storage and Storage Usage",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2ODZkMzQyNjdjMWE3NGY4OWNhZDMwMGIiLCJ1c2VybmFtZSI6ImpvaG5fZG9lIiwiZW1haWwiOiJqb2huLmRvZTFAZXhhbXBsZS5jb20iLCJwaG90byI6IiIsImlzRGVsZXRlZCI6ZmFsc2UsInN0b3JhZ2VMaW1pdCI6MTYxMDYxMjczNjAsImF1dGhUeXBlIjoiZW1haWwiLCJpYXQiOjE3NTIwMDkxMjQsImV4cCI6MTc1MjA5NTUyNH0.0X5J4bu7TA15Bz9sDp7TVXmSsSGU1pGtEM1T4qrKRQA",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{local-link}}/api/v1/files/myfiles/summary",
+							"host": [
+								"{{local-link}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"files",
+								"myfiles",
+								"summary"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Note - Images - pdf Count and Size",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2ODZkMzQyNjdjMWE3NGY4OWNhZDMwMGIiLCJ1c2VybmFtZSI6ImpvaG5fZG9lIiwiZW1haWwiOiJqb2huLmRvZTFAZXhhbXBsZS5jb20iLCJwaG90byI6IiIsImlzRGVsZXRlZCI6ZmFsc2UsInN0b3JhZ2VMaW1pdCI6MTYxMDYxMjczNjAsImF1dGhUeXBlIjoiZW1haWwiLCJpYXQiOjE3NTIwMDkxMjQsImV4cCI6MTc1MjA5NTUyNH0.0X5J4bu7TA15Bz9sDp7TVXmSsSGU1pGtEM1T4qrKRQA",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{local-link}}/api/v1/files/myfiles/summarybytype",
+							"host": [
+								"{{local-link}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"files",
+								"myfiles",
+								"summarybytype"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Favorite Toogle",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2ODZkMzQyNjdjMWE3NGY4OWNhZDMwMGIiLCJ1c2VybmFtZSI6ImpvaG5fZG9lIiwiZW1haWwiOiJqb2huLmRvZTFAZXhhbXBsZS5jb20iLCJwaG90byI6IiIsImlzRGVsZXRlZCI6ZmFsc2UsInN0b3JhZ2VMaW1pdCI6MTYxMDYxMjczNjAsImF1dGhUeXBlIjoiZW1haWwiLCJpYXQiOjE3NTIwMTEyOTksImV4cCI6MTc1MjA5NzY5OX0.DTkajvs55iYhCKaPuD6xzhvIY8A78AMGgkr6r7jy8No",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2ODZkMzQyNjdjMWE3NGY4OWNhZDMwMGIiLCJ1c2VybmFtZSI6ImpvaG5fZG9lIiwiZW1haWwiOiJqb2huLmRvZTFAZXhhbXBsZS5jb20iLCJwaG90byI6IiIsImlzRGVsZXRlZCI6ZmFsc2UsInN0b3JhZ2VMaW1pdCI6MTYxMDYxMjczNjAsImF1dGhUeXBlIjoiZW1haWwiLCJpYXQiOjE3NTIwMTEyOTksImV4cCI6MTc1MjA5NzY5OX0.DTkajvs55iYhCKaPuD6xzhvIY8A78AMGgkr6r7jy8No",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{local-link}}/api/v1/files/myfiles/686d89dd534287ae4bdbd0b0/favorite",
+							"host": [
+								"{{local-link}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"files",
+								"myfiles",
+								"686d89dd534287ae4bdbd0b0",
+								"favorite"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Favorite Files",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2ODZkMzQyNjdjMWE3NGY4OWNhZDMwMGIiLCJ1c2VybmFtZSI6ImpvaG5fZG9lIiwiZW1haWwiOiJqb2huLmRvZTFAZXhhbXBsZS5jb20iLCJwaG90byI6IiIsImlzRGVsZXRlZCI6ZmFsc2UsInN0b3JhZ2VMaW1pdCI6MTYxMDYxMjczNjAsImF1dGhUeXBlIjoiZW1haWwiLCJpYXQiOjE3NTIwMTEyOTksImV4cCI6MTc1MjA5NzY5OX0.DTkajvs55iYhCKaPuD6xzhvIY8A78AMGgkr6r7jy8No",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"rsz_whatsapp_image_2025-06-24_at_214144_b67fb0e6_1-removebg-preview 2\"\r\n}"
+						},
+						"url": {
+							"raw": "{{local-link}}/api/v1/files/myfiles/favorites",
+							"host": [
+								"{{local-link}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"files",
+								"myfiles",
+								"favorites"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Rename your file",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2ODZkMzQyNjdjMWE3NGY4OWNhZDMwMGIiLCJ1c2VybmFtZSI6ImpvaG5fZG9lIiwiZW1haWwiOiJqb2huLmRvZTFAZXhhbXBsZS5jb20iLCJwaG90byI6IiIsImlzRGVsZXRlZCI6ZmFsc2UsInN0b3JhZ2VMaW1pdCI6MTYxMDYxMjczNjAsImF1dGhUeXBlIjoiZW1haWwiLCJpYXQiOjE3NTIwMTEyOTksImV4cCI6MTc1MjA5NzY5OX0.DTkajvs55iYhCKaPuD6xzhvIY8A78AMGgkr6r7jy8No",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"rsz_whatsapp_image_2025-06-24_at_214144_b67fb0e6_1-removebg-preview 2\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{local-link}}/api/v1/files/myfiles/686d89dd534287ae4bdbd0b0/rename",
+							"host": [
+								"{{local-link}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"files",
+								"myfiles",
+								"686d89dd534287ae4bdbd0b0",
+								"rename"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Filter all files by Type - notes, images, pdf",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2ODZkMzQyNjdjMWE3NGY4OWNhZDMwMGIiLCJ1c2VybmFtZSI6ImpvaG5fZG9lIiwiZW1haWwiOiJqb2huLmRvZTFAZXhhbXBsZS5jb20iLCJwaG90byI6IiIsImlzRGVsZXRlZCI6ZmFsc2UsInN0b3JhZ2VMaW1pdCI6MTYxMDYxMjczNjAsImF1dGhUeXBlIjoiZW1haWwiLCJpYXQiOjE3NTIwMTEyOTksImV4cCI6MTc1MjA5NzY5OX0.DTkajvs55iYhCKaPuD6xzhvIY8A78AMGgkr6r7jy8No",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{local-link}}/api/v1/files/myfiles?type=pdf",
+							"host": [
+								"{{local-link}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"files",
+								"myfiles"
+							],
+							"query": [
+								{
+									"key": "type",
+									"value": "notes",
+									"disabled": true
+								},
+								{
+									"key": "type",
+									"value": "images",
+									"disabled": true
+								},
+								{
+									"key": "type",
+									"value": "pdf"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Filter files by Date range",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2ODZkMzQyNjdjMWE3NGY4OWNhZDMwMGIiLCJ1c2VybmFtZSI6ImpvaG5fZG9lIiwiZW1haWwiOiJqb2huLmRvZTFAZXhhbXBsZS5jb20iLCJwaG90byI6IiIsImlzRGVsZXRlZCI6ZmFsc2UsInN0b3JhZ2VMaW1pdCI6MTYxMDYxMjczNjAsImF1dGhUeXBlIjoiZW1haWwiLCJpYXQiOjE3NTIwMTEyOTksImV4cCI6MTc1MjA5NzY5OX0.DTkajvs55iYhCKaPuD6xzhvIY8A78AMGgkr6r7jy8No",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{local-link}}/api/v1/files/myfiles/by-date?start=2025-07-08&end=2025-07-09",
+							"host": [
+								"{{local-link}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"files",
+								"myfiles",
+								"by-date"
+							],
+							"query": [
+								{
+									"key": "start",
+									"value": "2025-07-08"
+								},
+								{
+									"key": "end",
+									"value": "2025-07-09"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Duplicate File",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2ODZkMzQyNjdjMWE3NGY4OWNhZDMwMGIiLCJ1c2VybmFtZSI6ImpvaG5fZG9lIiwiZW1haWwiOiJqb2huLmRvZTFAZXhhbXBsZS5jb20iLCJwaG90byI6IiIsImlzRGVsZXRlZCI6ZmFsc2UsInN0b3JhZ2VMaW1pdCI6MTYxMDYxMjczNjAsImF1dGhUeXBlIjoiZW1haWwiLCJpYXQiOjE3NTIwMTEyOTksImV4cCI6MTc1MjA5NzY5OX0.DTkajvs55iYhCKaPuD6xzhvIY8A78AMGgkr6r7jy8No",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{local-link}}/api/v1/files/myfiles/686d8c2d956422b91071e9d1/duplicate",
+							"host": [
+								"{{local-link}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"files",
+								"myfiles",
+								"686d8c2d956422b91071e9d1",
+								"duplicate"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Copy to folder",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2ODZkMzQyNjdjMWE3NGY4OWNhZDMwMGIiLCJ1c2VybmFtZSI6ImpvaG5fZG9lIiwiZW1haWwiOiJqb2huLmRvZTFAZXhhbXBsZS5jb20iLCJwaG90byI6IiIsImlzRGVsZXRlZCI6ZmFsc2UsInN0b3JhZ2VMaW1pdCI6MTYxMDYxMjczNjAsImF1dGhUeXBlIjoiZW1haWwiLCJpYXQiOjE3NTIwMTEyOTksImV4cCI6MTc1MjA5NzY5OX0.DTkajvs55iYhCKaPuD6xzhvIY8A78AMGgkr6r7jy8No",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{local-link}}/api/v1/files/myfiles/686d89dd534287ae4bdbd0b0/copy-to/686d3cb8d114f3801491a780",
+							"host": [
+								"{{local-link}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"files",
+								"myfiles",
+								"686d89dd534287ae4bdbd0b0",
+								"copy-to",
+								"686d3cb8d114f3801491a780"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
