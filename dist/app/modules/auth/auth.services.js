@@ -20,8 +20,10 @@ const auth_utils_1 = require("./auth.utils");
 const path_1 = __importDefault(require("path"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const email_1 = require("../../utils/email");
+const prettifyName_1 = require("../../utils/prettifyName");
 // const FIFTEEN_GB_IN_BYTES = 15 * 1024 * 1024 * 1024;
 const createUser = (file, userData) => __awaiter(void 0, void 0, void 0, function* () {
+    userData.username = (0, prettifyName_1.prettifyName)(userData.username);
     if (file) {
         const now = new Date().toISOString().replace(/[:.]/g, "");
         const ext = path_1.default.extname(file.originalname);
@@ -34,7 +36,7 @@ const createUser = (file, userData) => __awaiter(void 0, void 0, void 0, functio
     const result = yield auth_model_1.User.create(userData);
     const jwtPayload = {
         _id: result._id.toString(),
-        username: result.username,
+        username: result.username, // Already formatted
         email: result.email,
         photo: result.photo,
         isDeleted: result.isDeleted,
@@ -52,7 +54,7 @@ const googleSignService = (profile) => __awaiter(void 0, void 0, void 0, functio
     });
     if (!user) {
         const userData = {
-            username: profile.name,
+            username: profile.name, // Already prettified in Passport
             email: profile.email,
             photo: profile.photo,
             isDeleted: false,

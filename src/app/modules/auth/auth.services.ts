@@ -5,10 +5,13 @@ import { createToken, IJwtPayload } from "./auth.utils";
 import path from "path";
 import bcrypt from "bcrypt";
 import { sendEmail } from "../../utils/email";
+import { prettifyName } from "../../utils/prettifyName";
 
 // const FIFTEEN_GB_IN_BYTES = 15 * 1024 * 1024 * 1024;
 
 const createUser = async (file: any, userData: IUser) => {
+    userData.username = prettifyName(userData.username);
+
     if (file) {
         const now = new Date().toISOString().replace(/[:.]/g, "");
         const ext = path.extname(file.originalname);
@@ -23,7 +26,7 @@ const createUser = async (file: any, userData: IUser) => {
 
     const jwtPayload: IJwtPayload = {
         _id: result._id.toString(),
-        username: result.username,
+        username: result.username, // Already formatted
         email: result.email,
         photo: result.photo,
         isDeleted: result.isDeleted,
@@ -32,7 +35,6 @@ const createUser = async (file: any, userData: IUser) => {
     };
 
     const accessToken = createToken(jwtPayload, config.jwt_access_secret as string, config.jwt_access_expire as string);
-
     const refreshToken = createToken(jwtPayload, config.jwt_refresh_secret as string, config.jwt_refresh_expire as string);
 
     return { user: result, accessToken, refreshToken };
@@ -46,8 +48,8 @@ const googleSignService = async (profile: { id: string; email: string; name: str
     });
 
     if (!user) {
-        const userData: IUser = {
-            username: profile.name,
+        const userData = {
+            username: profile.name, // Already prettified in Passport
             email: profile.email,
             photo: profile.photo,
             isDeleted: false,
@@ -63,7 +65,7 @@ const googleSignService = async (profile: { id: string; email: string; name: str
         await user.save();
     }
 
-    const jwtPayload: IJwtPayload = {
+    const jwtPayload = {
         _id: user._id.toString(),
         username: user.username,
         email: user.email,

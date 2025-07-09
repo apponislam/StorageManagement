@@ -2,37 +2,26 @@ import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import config from "../config";
 import User from "../modules/auth/auth.model";
-
-passport.serializeUser((user: any, done) => {
-    done(null, user.id);
-});
-
-passport.deserializeUser(async (id: string, done) => {
-    try {
-        const user = await User.findById(id);
-        done(null, user);
-    } catch (err) {
-        done(err);
-    }
-});
+import { prettifyName } from "../utils/prettifyName";
 
 passport.use(
     new GoogleStrategy(
         {
-            clientID: config.google_client_id as string,
-            clientSecret: config.google_client_secret as string,
+            clientID: config.google_client_id!,
+            clientSecret: config.google_client_secret!,
             callbackURL: `${config.google_callback_url}/api/v1/auth/google/callback`,
             passReqToCallback: true,
         },
-        async (req, accessToken, refreshToken, profile, done) => {
+        async (_req, _accessToken, _refreshToken, profile, done) => {
             try {
-                const email = profile.emails?.[0]?.value;
+                const email = profile.emails?.[0]?.value || null;
                 const photo = profile.photos?.[0]?.value;
-                const username = profile.displayName || email?.split("@")[0] || "user";
+                const username = prettifyName(profile.displayName || (email ? email.split("@")[0] : "user"));
 
-                let user = await User.findOne({
-                    $or: [{ googleId: profile.id }, { email: email }],
-                });
+                const orClause: Array<{ googleId?: string; email?: string }> = [{ googleId: profile.id }];
+                if (email) orClause.push({ email });
+
+                let user = await User.findOne({ $or: orClause });
 
                 if (!user) {
                     user = await User.create({
@@ -43,7 +32,6 @@ passport.use(
                         authType: "google",
                         isDeleted: false,
                         storageLimit: 15 * 1024 * 1024 * 1024,
-                        password: undefined,
                     });
                 } else if (!user.googleId) {
                     user.googleId = profile.id;
@@ -52,8 +40,8 @@ passport.use(
                 }
 
                 done(null, user);
-            } catch (err) {
-                done(err);
+            } catch (error) {
+                done(error as Error);
             }
         }
     )

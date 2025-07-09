@@ -30,8 +30,6 @@ const sendResponse_1 = __importDefault(require("../../utils/sendResponse"));
 const auth_services_1 = require("./auth.services");
 const config_1 = __importDefault(require("../../config"));
 const createUser = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log(req.file);
-    console.log(req.body);
     const _a = req.body, { password, confirmPassword } = _a, rest = __rest(_a, ["password", "confirmPassword"]);
     if (password !== confirmPassword) {
         (0, sendResponse_1.default)(res, {
@@ -57,19 +55,14 @@ const createUser = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, voi
     });
 }));
 const googleCallback = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    if (!req.user) {
+    if (!req.user)
         throw new Error("Google authentication failed");
-    }
-    const profile = req.user;
-    console.log("Google Profile:", profile);
-    const email = profile.email || "";
-    const photo = profile.photo || "";
-    const usernameRaw = profile.username || "";
-    const usernameNoSpaces = usernameRaw.replace(/\s+/g, "");
+    const { googleId, email = "", photo = "", username = "" } = req.user;
+    // ✅ Removed redundant prettifyName(username) since Passport already formatted it
     const { user, accessToken, refreshToken } = yield auth_services_1.UserService.googleSignService({
-        id: profile.googleId,
+        id: googleId,
         email,
-        name: usernameNoSpaces,
+        name: username, // Directly pass username (already formatted)
         photo,
     });
     res.cookie("refreshToken", refreshToken, {
@@ -81,12 +74,8 @@ const googleCallback = (0, catchAsync_1.default)((req, res) => __awaiter(void 0,
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
-        message: "Google sign-in successful",
-        data: {
-            user,
-            accessToken,
-            refreshToken,
-        },
+        message: "Google sign‑in successful",
+        data: { user, accessToken, refreshToken },
     });
 }));
 const loginUser = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {

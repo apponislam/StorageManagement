@@ -5,11 +5,9 @@ import httpStatus from "http-status";
 import sendResponse from "../../utils/sendResponse";
 import { UserService } from "./auth.services";
 import config from "../../config";
+import { prettifyName } from "../../utils/prettifyName";
 
 const createUser = catchAsync(async (req: Request, res: Response) => {
-    console.log(req.file);
-    console.log(req.body);
-
     const { password, confirmPassword, ...rest } = req.body;
 
     if (password !== confirmPassword) {
@@ -40,22 +38,15 @@ const createUser = catchAsync(async (req: Request, res: Response) => {
 });
 
 const googleCallback = catchAsync(async (req: Request, res: Response) => {
-    if (!req.user) {
-        throw new Error("Google authentication failed");
-    }
+    if (!req.user) throw new Error("Google authentication failed");
 
-    const profile = req.user as any;
-    console.log("Google Profile:", profile);
+    const { googleId, email = "", photo = "", username = "" } = req.user as any;
 
-    const email = profile.email || "";
-    const photo = profile.photo || "";
-    const usernameRaw = profile.username || "";
-    const usernameNoSpaces = usernameRaw.replace(/\s+/g, "");
-
+    // ✅ Removed redundant prettifyName(username) since Passport already formatted it
     const { user, accessToken, refreshToken } = await UserService.googleSignService({
-        id: profile.googleId,
+        id: googleId,
         email,
-        name: usernameNoSpaces,
+        name: username, // Directly pass username (already formatted)
         photo,
     });
 
@@ -69,12 +60,8 @@ const googleCallback = catchAsync(async (req: Request, res: Response) => {
     sendResponse(res, {
         statusCode: httpStatus.OK,
         success: true,
-        message: "Google sign-in successful",
-        data: {
-            user,
-            accessToken,
-            refreshToken,
-        },
+        message: "Google sign‑in successful",
+        data: { user, accessToken, refreshToken },
     });
 });
 

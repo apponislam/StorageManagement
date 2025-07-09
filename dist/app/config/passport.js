@@ -16,32 +16,22 @@ const passport_1 = __importDefault(require("passport"));
 const passport_google_oauth20_1 = require("passport-google-oauth20");
 const config_1 = __importDefault(require("../config"));
 const auth_model_1 = __importDefault(require("../modules/auth/auth.model"));
-passport_1.default.serializeUser((user, done) => {
-    done(null, user.id);
-});
-passport_1.default.deserializeUser((id, done) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const user = yield auth_model_1.default.findById(id);
-        done(null, user);
-    }
-    catch (err) {
-        done(err);
-    }
-}));
+const prettifyName_1 = require("../utils/prettifyName");
 passport_1.default.use(new passport_google_oauth20_1.Strategy({
     clientID: config_1.default.google_client_id,
     clientSecret: config_1.default.google_client_secret,
     callbackURL: `${config_1.default.google_callback_url}/api/v1/auth/google/callback`,
     passReqToCallback: true,
-}, (req, accessToken, refreshToken, profile, done) => __awaiter(void 0, void 0, void 0, function* () {
+}, (_req, _accessToken, _refreshToken, profile, done) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b, _c, _d;
     try {
-        const email = (_b = (_a = profile.emails) === null || _a === void 0 ? void 0 : _a[0]) === null || _b === void 0 ? void 0 : _b.value;
+        const email = ((_b = (_a = profile.emails) === null || _a === void 0 ? void 0 : _a[0]) === null || _b === void 0 ? void 0 : _b.value) || null;
         const photo = (_d = (_c = profile.photos) === null || _c === void 0 ? void 0 : _c[0]) === null || _d === void 0 ? void 0 : _d.value;
-        const username = profile.displayName || (email === null || email === void 0 ? void 0 : email.split("@")[0]) || "user";
-        let user = yield auth_model_1.default.findOne({
-            $or: [{ googleId: profile.id }, { email: email }],
-        });
+        const username = (0, prettifyName_1.prettifyName)(profile.displayName || (email ? email.split("@")[0] : "user"));
+        const orClause = [{ googleId: profile.id }];
+        if (email)
+            orClause.push({ email });
+        let user = yield auth_model_1.default.findOne({ $or: orClause });
         if (!user) {
             user = yield auth_model_1.default.create({
                 googleId: profile.id,
@@ -51,7 +41,6 @@ passport_1.default.use(new passport_google_oauth20_1.Strategy({
                 authType: "google",
                 isDeleted: false,
                 storageLimit: 15 * 1024 * 1024 * 1024,
-                password: undefined,
             });
         }
         else if (!user.googleId) {
@@ -61,8 +50,8 @@ passport_1.default.use(new passport_google_oauth20_1.Strategy({
         }
         done(null, user);
     }
-    catch (err) {
-        done(err);
+    catch (error) {
+        done(error);
     }
 })));
 exports.default = passport_1.default;
