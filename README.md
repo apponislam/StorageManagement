@@ -1,6 +1,6 @@
 # Storage Management API
 
-🌐 **Live Demo**: [https://storage.4ppon.com/](https://storage.4ppon.com/)
+🌐 **Live Demo**: [https://storage-management-pi.vercel.app](https://storage-management-pi.vercel.app)
 
 ```bash
 git clone https://github.com/apponislam/StorageManagement.git
